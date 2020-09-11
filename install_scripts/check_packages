@@ -1,0 +1,43 @@
+#!/bin/bash
+#Testing checking of package installed on machine
+
+while getopts bihn: OPT
+do
+    case "$OPT" in
+        n) packages=${OPTARG};;
+        i) install=1;;
+        b) batch=1;;
+        h) printf "Command flag you can use: \\n [Required!] -n : For list of package names in double quotes.\\n \\t Example: -n \"packageOne packageTwo\"\\n [Optional!] -i : for install package\\n [Optional!] -b : For batch command mode\\n";;
+        ?) echo "No -n${OPTARG} argument found.";;
+    esac
+done
+
+if [ -z $packages ]
+then
+    echo "No package name supplied! Use -n flag with package name to search."
+    exit 1;
+fi
+
+if [ -z $batch ]
+then
+    echo "No batch flag set. NOT Suppressing ARG checks. Use -b flag to suppress Input ARG Check messages!"
+else
+    echo "Batch command flag set. Suppressing ARG checks!"
+fi
+
+
+if [[ -z $install && -z $batch ]]
+then
+    echo "No install optional arg supplied! Use -i option with 'yes'/'no' parameters.";
+    echo "Defaulting to install='no'";
+fi
+
+echo "List of names to check: " $packages
+echo "size: " $#;
+
+echo "Checking for the following packages:"
+for NAME in $packages
+do
+    echo $NAME;
+    ~/bin/install_scripts/check_package -b -n $NAME;
+done

@@ -1,0 +1,70 @@
+#!/bin/bash
+#Testing checking of package installed on machine
+
+while getopts n:ib OPT
+do
+    case "$OPT" in
+        n) package_name=${OPTARG};;
+        i) install=1;;
+        b) batch=1;;
+        ?) echo "No -${OPTARG} argument found.";;
+    esac
+done
+
+if [ -z $package_name ]
+then
+    echo "No package name supplied! Use -n flag with package name to search."
+    exit 1;
+fi
+
+
+
+if [ -z $batch ]
+then
+    echo "No batch flag set. NOT Suppressing ARG checks. Use -b flag to suppress Input ARG Check messages!"
+else
+    echo "Batch command flag set. Suppressing ARG checks!"
+fi
+
+
+if [[ -z $install && -z $batch ]]
+then
+    echo "No install optional arg supplied! Use -i option with 'yes'/'no' parameters.";
+    echo "Defaulting to install='no'";
+fi
+
+
+#dpkg -s curl >/dev/null; result=$?;
+if [[ $install -eq "0" ]]
+then
+    echo "Checking for $package_name package on system!"
+    package_status="$(apt-cache policy $package_name | grep 'Installed:'; result=$?)";
+else
+    echo "Installing $package_name package on system!"
+    package_status="$(apt-get install $package_name; result=$?)";
+    if [ result==0 ]
+    then
+        echo ".. Validating for $package_name package on system!" 
+        package_status="$(apt-cache policy $package_name | grep 'Installed:'; result=$?)";
+    fi
+fi
+
+if [ result==0 ]
+then 
+    if [[ ${#package_status} -eq 0 ]]
+    then
+        echo "Package Name not Valid!"
+        exit 1;
+    fi
+    if [[ $package_status =~ "Installed: (none)" ]]
+    then 
+        printf "%s NOT Installed!\n" $package_name;
+    else
+        printf "%s " $package_name;
+        printf "%s" $package_status;
+        printf "\n";
+        
+    fi
+else
+    echo "Command Did NOT Execute!"
+fi

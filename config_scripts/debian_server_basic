@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#Packages for mounting SAMBA/CIFS shares
+sambaClientPackages="samba-client samba-common cifs-utils"
+#NFS client Package
+nfsClientPackage="nfs-common"
+#Adding and removing PPA && Language Locales
+generalPackages="software-properties-common language-pack-en";
+
+~/bin/install_scripts/check_packages -i -b -n "$sambaClientPackages $nfsClientPackage $generalPackages"

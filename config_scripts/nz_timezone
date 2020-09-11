@@ -1,0 +1,15 @@
+#!/bin/bash
+#Testing Exit codes of commands
+echo "Checking for Timezone"
+command_stdout=$(timedatectl | grep "Time zone: ");
+echo $command_stdout
+if [[ $command_stdout =~ "Time zone: Pacific/Auckland" ]]
+then
+    echo "Time zone is correct!"
+else
+    echo "Time zone is wrong. Setting correct zone!"
+    set_command=$(sudo timedatectl set-timezone Pacific/Auckland);
+fi
+
+#timedatectl set-timezone Pacific/Auckland
+
